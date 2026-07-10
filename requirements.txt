@@ -1,0 +1,5 @@
+sigma-cli
+pysigma-backend-splunk
+pysigma-backend-kusto
+yamllint
+pyyaml
