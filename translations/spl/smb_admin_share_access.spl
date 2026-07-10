@@ -1,0 +1,5 @@
+# Rule: SMB Admin Share Access
+index=* sourcetype="WinEventLog:Security" EventCode=5140
+(ShareName="*\\C$" OR ShareName="*\\ADMIN$" OR ShareName="*\\IPC$")
+NOT SubjectUserName="*$"
+| table _time host SubjectUserName IpAddress ShareName EventCode

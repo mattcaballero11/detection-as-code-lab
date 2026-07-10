@@ -1,0 +1,5 @@
+# Rule: Azure AD Risky Sign-In Due to Unlikely Travel
+index=* sourcetype="azure:aad:signin"
+(RiskEventTypes="*unlikelyTravel*" OR RiskEventTypes="*anonymizedIPAddress*" OR RiskEventTypes="*maliciousIPAddress*")
+NOT (ResultType=0 ConditionalAccessStatus="success" RiskState="dismissed")
+| table _time UserPrincipalName IPAddress AppDisplayName Location RiskEventTypes RiskState ConditionalAccessStatus ResultType

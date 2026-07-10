@@ -1,0 +1,5 @@
+# Rule: Suspicious Scheduled Task Creation
+index=* sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+Image="*\\schtasks.exe" (CommandLine="* /create *" OR CommandLine="* /Create *")
+(CommandLine="* /sc minute *" OR CommandLine="* /sc once *" OR CommandLine="* /tn *" OR CommandLine="* /tr *")
+| table _time host User Image ParentImage CommandLine

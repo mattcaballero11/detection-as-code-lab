@@ -1,0 +1,30 @@
+// Lab test: Windows Defender Disabled via Command Line
+// Expected result: 2 rows returned (PowerShell Set-MpPreference and sc.exe service stop examples).
+let DeviceProcessEvents = datatable(
+    Timestamp:datetime,
+    DeviceName:string,
+    AccountName:string,
+    FileName:string,
+    FolderPath:string,
+    ProcessCommandLine:string,
+    InitiatingProcessFileName:string,
+    InitiatingProcessCommandLine:string,
+    ReportId:long
+)
+[
+    datetime(2026-07-09T16:00:00Z), "LAB-WIN10-01", "lab.admin", "powershell.exe", "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "powershell.exe -ExecutionPolicy Bypass -Command Set-MpPreference -DisableRealtimeMonitoring $true", "cmd.exe", "cmd.exe /c powershell.exe -ExecutionPolicy Bypass", 6001,
+    datetime(2026-07-09T16:03:00Z), "LAB-WIN10-01", "lab.admin", "sc.exe", "C:\\Windows\\System32\\sc.exe", "sc.exe stop WinDefend", "cmd.exe", "cmd.exe /c sc.exe stop WinDefend", 6002,
+    datetime(2026-07-09T16:10:00Z), "LAB-WIN10-01", "lab.admin", "powershell.exe", "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "powershell.exe Get-MpPreference", "explorer.exe", "explorer.exe", 6003
+];
+DeviceProcessEvents
+| where (
+    FileName in~ ("powershell.exe", "pwsh.exe")
+    and ProcessCommandLine has "Set-MpPreference"
+    and ProcessCommandLine has_any ("DisableRealtimeMonitoring $true", "DisableBehaviorMonitoring $true", "DisableBlockAtFirstSeen $true", "DisableIOAVProtection $true", "DisableScriptScanning $true")
+  )
+  or (
+    FileName =~ "sc.exe"
+    and ProcessCommandLine has "WinDefend"
+    and ProcessCommandLine has "stop"
+  )
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

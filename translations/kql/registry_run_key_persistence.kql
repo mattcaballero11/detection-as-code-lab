@@ -1,0 +1,7 @@
+// Rule: Registry Run Key Persistence
+// Source Sigma: rules/sigma/windows/registry/registry_run_key_persistence.yml
+// ATT&CK: T1547.001
+DeviceRegistryEvents
+| where RegistryKey has_any ("\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce")
+| where not(RegistryValueData has_any ("Microsoft\\OneDrive", "Teams.exe"))
+| project Timestamp, DeviceName, AccountName, ActionType, RegistryKey, RegistryValueName, RegistryValueData, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

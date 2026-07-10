@@ -1,0 +1,5 @@
+# Rule: Windows Defender Disabled via Command Line
+index=* sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+((Image="*\\powershell.exe" OR Image="*\\pwsh.exe") CommandLine="*Set-MpPreference*" (CommandLine="*DisableRealtimeMonitoring $true*" OR CommandLine="*DisableBehaviorMonitoring $true*" OR CommandLine="*DisableBlockAtFirstSeen $true*" OR CommandLine="*DisableIOAVProtection $true*" OR CommandLine="*DisableScriptScanning $true*"))
+OR (Image="*\\sc.exe" CommandLine="*WinDefend*" CommandLine="*stop*")
+| table _time host User Image ParentImage CommandLine

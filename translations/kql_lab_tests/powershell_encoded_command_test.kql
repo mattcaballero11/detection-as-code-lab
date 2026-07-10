@@ -1,0 +1,20 @@
+// Lab test: paste this into Log Analytics / Azure Data Explorer to show a detection hit without real client data.
+let DeviceProcessEvents = datatable(
+    Timestamp:datetime,
+    DeviceName:string,
+    AccountName:string,
+    FileName:string,
+    FolderPath:string,
+    ProcessCommandLine:string,
+    InitiatingProcessFileName:string,
+    InitiatingProcessCommandLine:string,
+    ReportId:long
+)
+[
+    datetime(2026-07-09T10:00:00Z), "LAB-WIN10-01", "lab.user", "powershell.exe", "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "powershell.exe -NoP -enc SQBFAFgAIABTAEEATQBQAEwARQA=", "cmd.exe", "cmd.exe /c start powershell", 1001,
+    datetime(2026-07-09T10:05:00Z), "LAB-WIN10-01", "lab.user", "notepad.exe", "C:\\Windows\\System32\\notepad.exe", "notepad.exe", "explorer.exe", "explorer.exe", 1002
+];
+DeviceProcessEvents
+| where FileName in~ ("powershell.exe", "pwsh.exe")
+| where ProcessCommandLine has_any (" -enc ", " -encodedcommand ", " -e ", "/enc ", "/encodedcommand ")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

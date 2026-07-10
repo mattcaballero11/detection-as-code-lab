@@ -1,0 +1,6 @@
+# Rule: Suspicious PowerShell Download Cradle
+index=* sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\powershell.exe" OR Image="*\\pwsh.exe")
+(CommandLine="*DownloadString*" OR CommandLine="*DownloadFile*" OR CommandLine="*Invoke-WebRequest*" OR CommandLine="*iwr *" OR CommandLine="*curl *" OR CommandLine="*wget *" OR CommandLine="*Net.WebClient*")
+(CommandLine="*http://*" OR CommandLine="*https://*")
+| table _time host User Image ParentImage CommandLine

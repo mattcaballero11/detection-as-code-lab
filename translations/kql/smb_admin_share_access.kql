@@ -1,0 +1,9 @@
+// Rule: SMB Admin Share Access
+// Source Sigma: rules/sigma/windows/security/smb_admin_share_access.yml
+// ATT&CK: T1021.002
+// Sentinel table option: SecurityEvent, when Windows Security Event ID 5140 is ingested.
+SecurityEvent
+| where EventID == 5140
+| where ShareName endswith "\\C$" or ShareName endswith "\\ADMIN$" or ShareName endswith "\\IPC$"
+| where not(SubjectUserName endswith "$")
+| project TimeGenerated, Computer, SubjectUserName, IpAddress, ShareName, Activity, EventID

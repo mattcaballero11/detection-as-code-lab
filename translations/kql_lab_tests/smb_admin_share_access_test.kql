@@ -1,0 +1,22 @@
+// Lab test: SMB Admin Share Access
+// Expected result: 1 row returned (human account accessing administrative share; machine account noise excluded).
+let SecurityEvent = datatable(
+    TimeGenerated:datetime,
+    Computer:string,
+    SubjectUserName:string,
+    IpAddress:string,
+    ShareName:string,
+    Activity:string,
+    EventID:int
+)
+[
+    datetime(2026-07-09T19:00:00Z), "LAB-WIN10-01", "lab.admin", "10.10.10.25", "\\\\LAB-WIN10-01\\C$", "A network share object was accessed", 5140,
+    datetime(2026-07-09T19:05:00Z), "LAB-WIN10-01", "DC01$", "10.10.10.5", "\\\\LAB-WIN10-01\\ADMIN$", "A network share object was accessed", 5140,
+    datetime(2026-07-09T19:10:00Z), "LAB-WIN10-01", "lab.user", "10.10.10.30", "\\\\LAB-WIN10-01\\Public", "A network share object was accessed", 5140,
+    datetime(2026-07-09T19:15:00Z), "LAB-WIN10-01", "lab.user", "10.10.10.30", "\\\\LAB-WIN10-01\\C$", "An account was successfully logged on", 4624
+];
+SecurityEvent
+| where EventID == 5140
+| where ShareName endswith "\\C$" or ShareName endswith "\\ADMIN$" or ShareName endswith "\\IPC$"
+| where not(SubjectUserName endswith "$" )
+| project TimeGenerated, Computer, SubjectUserName, IpAddress, ShareName, Activity, EventID

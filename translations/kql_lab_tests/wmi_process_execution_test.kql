@@ -1,0 +1,22 @@
+// Lab test: WMI Process Execution via WMIC
+// Expected result: 1 row returned (process creation through WMIC).
+let DeviceProcessEvents = datatable(
+    Timestamp:datetime,
+    DeviceName:string,
+    AccountName:string,
+    FileName:string,
+    FolderPath:string,
+    ProcessCommandLine:string,
+    InitiatingProcessFileName:string,
+    InitiatingProcessCommandLine:string,
+    ReportId:long
+)
+[
+    datetime(2026-07-09T18:00:00Z), "LAB-WIN10-01", "lab.admin", "wmic.exe", "C:\\Windows\\System32\\wbem\\wmic.exe", "wmic.exe /node:LAB-WIN10-02 process call create cmd.exe /c whoami", "cmd.exe", "cmd.exe /c wmic.exe /node:LAB-WIN10-02 process call create cmd.exe /c whoami", 8001,
+    datetime(2026-07-09T18:05:00Z), "LAB-WIN10-01", "lab.admin", "wmic.exe", "C:\\Windows\\System32\\wbem\\wmic.exe", "wmic.exe os get Caption", "powershell.exe", "powershell.exe -Command wmic.exe os get Caption", 8002,
+    datetime(2026-07-09T18:10:00Z), "LAB-WIN10-01", "lab.user", "whoami.exe", "C:\\Windows\\System32\\whoami.exe", "whoami.exe", "cmd.exe", "cmd.exe /c whoami", 8003
+];
+DeviceProcessEvents
+| where FileName =~ "wmic.exe"
+| where ProcessCommandLine has_all ("process", "call", "create")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

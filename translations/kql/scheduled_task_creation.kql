@@ -1,0 +1,8 @@
+// Rule: Suspicious Scheduled Task Creation
+// Source Sigma: rules/sigma/windows/process_creation/proc_scheduled_task_creation.yml
+// ATT&CK: T1053.005
+DeviceProcessEvents
+| where FileName =~ "schtasks.exe"
+| where ProcessCommandLine has_any (" /create ", " /Create ")
+| where ProcessCommandLine has_any (" /sc minute ", " /sc once ", " /tn ", " /tr ")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

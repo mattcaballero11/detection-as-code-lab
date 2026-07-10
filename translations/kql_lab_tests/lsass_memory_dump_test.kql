@@ -1,0 +1,12 @@
+let DeviceProcessEvents = datatable(
+    Timestamp:datetime, DeviceName:string, AccountName:string, FileName:string, FolderPath:string,
+    ProcessCommandLine:string, InitiatingProcessFileName:string, InitiatingProcessCommandLine:string, ReportId:long
+)
+[
+    datetime(2026-07-09T11:00:00Z), "LAB-WIN10-01", "lab.admin", "procdump64.exe", "C:\\Tools\\procdump64.exe", "procdump64.exe -ma lsass.exe C:\\Temp\\lsass.dmp", "cmd.exe", "cmd.exe", 2001,
+    datetime(2026-07-09T11:10:00Z), "LAB-WIN10-01", "lab.user", "taskmgr.exe", "C:\\Windows\\System32\\taskmgr.exe", "taskmgr.exe", "explorer.exe", "explorer.exe", 2002
+];
+DeviceProcessEvents
+| where ProcessCommandLine has_any ("lsass", "comsvcs.dll", "MiniDump") or FileName in~ ("procdump.exe", "procdump64.exe", "rundll32.exe")
+| where ProcessCommandLine has_any ("lsass", "MiniDump", ".dmp", "comsvcs.dll")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

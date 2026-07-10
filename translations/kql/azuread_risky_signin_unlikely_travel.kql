@@ -1,0 +1,7 @@
+// Rule: Azure AD Risky Sign-In Due to Unlikely Travel
+// Source Sigma: rules/sigma/cloud/azuread/azuread_risky_signin_unlikely_travel.yml
+// ATT&CK: T1078
+SigninLogs
+| where RiskEventTypes has_any ("unlikelyTravel", "anonymizedIPAddress", "maliciousIPAddress")
+| where not(ResultType == 0 and ConditionalAccessStatus == "success" and RiskState == "dismissed")
+| project TimeGenerated, UserPrincipalName, IPAddress, AppDisplayName, Location, RiskEventTypes, RiskState, ConditionalAccessStatus, ResultType

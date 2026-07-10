@@ -1,0 +1,7 @@
+// Rule: WMI Process Execution via WMIC
+// Source Sigma: rules/sigma/windows/process_creation/proc_wmi_process_execution.yml
+// ATT&CK: T1047
+DeviceProcessEvents
+| where FileName =~ "wmic.exe"
+| where ProcessCommandLine has_all ("process", "call", "create")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

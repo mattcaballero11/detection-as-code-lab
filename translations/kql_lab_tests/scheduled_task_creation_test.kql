@@ -1,0 +1,23 @@
+// Lab test: Suspicious Scheduled Task Creation
+// Expected result: 1 row returned (short-interval scheduled task executing from a user-writable path).
+let DeviceProcessEvents = datatable(
+    Timestamp:datetime,
+    DeviceName:string,
+    AccountName:string,
+    FileName:string,
+    FolderPath:string,
+    ProcessCommandLine:string,
+    InitiatingProcessFileName:string,
+    InitiatingProcessCommandLine:string,
+    ReportId:long
+)
+[
+    datetime(2026-07-09T15:00:00Z), "LAB-WIN10-01", "lab.user", "schtasks.exe", "C:\\Windows\\System32\\schtasks.exe", "schtasks.exe /create /tn OfficeUpdater /tr C:\\Users\\Public\\office_update.exe /sc minute /mo 5 /f", "cmd.exe", "cmd.exe /c schtasks.exe /create /tn OfficeUpdater /tr C:\\Users\\Public\\office_update.exe /sc minute /mo 5 /f", 5001,
+    datetime(2026-07-09T15:05:00Z), "LAB-WIN10-01", "lab.admin", "schtasks.exe", "C:\\Windows\\System32\\schtasks.exe", "schtasks.exe /query /fo LIST /v", "powershell.exe", "powershell.exe -Command schtasks.exe /query /fo LIST /v", 5002,
+    datetime(2026-07-09T15:10:00Z), "LAB-WIN10-01", "SYSTEM", "taskhostw.exe", "C:\\Windows\\System32\\taskhostw.exe", "taskhostw.exe", "services.exe", "services.exe", 5003
+];
+DeviceProcessEvents
+| where FileName =~ "schtasks.exe"
+| where ProcessCommandLine has_any (" /create ", " /Create ")
+| where ProcessCommandLine has_any (" /sc minute ", " /sc once ", " /tn ", " /tr ")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

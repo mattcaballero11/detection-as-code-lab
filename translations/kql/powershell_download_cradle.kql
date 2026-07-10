@@ -1,0 +1,8 @@
+// Rule: Suspicious PowerShell Download Cradle
+// Source Sigma: rules/sigma/windows/process_creation/proc_powershell_download_cradle.yml
+// ATT&CK: T1059.001, T1105
+DeviceProcessEvents
+| where FileName in~ ("powershell.exe", "pwsh.exe")
+| where ProcessCommandLine has_any ("DownloadString", "DownloadFile", "Invoke-WebRequest", "iwr ", "curl ", "wget ", "Net.WebClient")
+| where ProcessCommandLine has_any ("http://", "https://")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

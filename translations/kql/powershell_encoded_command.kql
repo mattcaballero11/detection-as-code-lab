@@ -1,0 +1,8 @@
+// Rule: Suspicious PowerShell Encoded Command
+// Source Sigma: rules/sigma/windows/process_creation/proc_powershell_encoded_command.yml
+// ATT&CK: T1059.001
+// Platform: Microsoft Defender XDR / Sentinel-style KQL
+DeviceProcessEvents
+| where FileName in~ ("powershell.exe", "pwsh.exe")
+| where ProcessCommandLine has_any (" -enc ", " -encodedcommand ", " -e ", "/enc ", "/encodedcommand ")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

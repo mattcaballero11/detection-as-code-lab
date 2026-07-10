@@ -1,0 +1,5 @@
+# Rule: Suspicious Rundll32 Execution
+index=* sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+Image="*\\rundll32.exe"
+(CommandLine="*javascript:*" OR CommandLine="*mshtml,*" OR CommandLine="*RunHTMLApplication*" OR CommandLine="*http://*" OR CommandLine="*https://*" OR CommandLine="*.sct*" OR CommandLine="*scrobj.dll*")
+| table _time host User Image ParentImage CommandLine

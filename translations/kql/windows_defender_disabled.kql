@@ -1,0 +1,15 @@
+// Rule: Windows Defender Disabled via Command Line
+// Source Sigma: rules/sigma/windows/process_creation/proc_windows_defender_disabled.yml
+// ATT&CK: T1562.001
+DeviceProcessEvents
+| where (
+    FileName in~ ("powershell.exe", "pwsh.exe")
+    and ProcessCommandLine has "Set-MpPreference"
+    and ProcessCommandLine has_any ("DisableRealtimeMonitoring $true", "DisableBehaviorMonitoring $true", "DisableBlockAtFirstSeen $true", "DisableIOAVProtection $true", "DisableScriptScanning $true")
+  )
+  or (
+    FileName =~ "sc.exe"
+    and ProcessCommandLine has "WinDefend"
+    and ProcessCommandLine has "stop"
+  )
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

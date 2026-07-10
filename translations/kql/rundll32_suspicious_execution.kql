@@ -1,0 +1,7 @@
+// Rule: Suspicious Rundll32 Execution
+// Source Sigma: rules/sigma/windows/process_creation/proc_rundll32_suspicious_execution.yml
+// ATT&CK: T1218.011
+DeviceProcessEvents
+| where FileName =~ "rundll32.exe"
+| where ProcessCommandLine has_any ("javascript:", "mshtml,", "RunHTMLApplication", "http://", "https://", ".sct", "scrobj.dll")
+| project Timestamp, DeviceName, AccountName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

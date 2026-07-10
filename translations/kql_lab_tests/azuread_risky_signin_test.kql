@@ -1,0 +1,12 @@
+let SigninLogs = datatable(
+    TimeGenerated:datetime, UserPrincipalName:string, IPAddress:string, AppDisplayName:string, Location:string,
+    RiskEventTypes:string, RiskState:string, ConditionalAccessStatus:string, ResultType:int
+)
+[
+    datetime(2026-07-09T13:00:00Z), "lab.user@example.com", "203.0.113.50", "Office 365", "US", "[\"unlikelyTravel\"]", "atRisk", "failure", 50074,
+    datetime(2026-07-09T13:05:00Z), "normal.user@example.com", "198.51.100.10", "Office 365", "PH", "[]", "none", "success", 0
+];
+SigninLogs
+| where RiskEventTypes has_any ("unlikelyTravel", "anonymizedIPAddress", "maliciousIPAddress")
+| where not(ResultType == 0 and ConditionalAccessStatus == "success" and RiskState == "dismissed")
+| project TimeGenerated, UserPrincipalName, IPAddress, AppDisplayName, Location, RiskEventTypes, RiskState, ConditionalAccessStatus, ResultType

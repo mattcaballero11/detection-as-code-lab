@@ -1,0 +1,12 @@
+let DeviceRegistryEvents = datatable(
+    Timestamp:datetime, DeviceName:string, AccountName:string, ActionType:string, RegistryKey:string,
+    RegistryValueName:string, RegistryValueData:string, InitiatingProcessFileName:string, InitiatingProcessCommandLine:string, ReportId:long
+)
+[
+    datetime(2026-07-09T12:00:00Z), "LAB-WIN10-01", "lab.user", "RegistryValueSet", "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "Updater", "C:\\Users\\Public\\updater.exe", "reg.exe", "reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Updater /d C:\\Users\\Public\\updater.exe", 3001,
+    datetime(2026-07-09T12:10:00Z), "LAB-WIN10-01", "lab.user", "RegistryValueSet", "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "OneDrive", "C:\\Users\\lab.user\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe", "OneDriveSetup.exe", "OneDriveSetup.exe", 3002
+];
+DeviceRegistryEvents
+| where RegistryKey has_any ("\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce")
+| where not(RegistryValueData has_any ("Microsoft\\OneDrive", "Teams.exe"))
+| project Timestamp, DeviceName, AccountName, ActionType, RegistryKey, RegistryValueName, RegistryValueData, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId

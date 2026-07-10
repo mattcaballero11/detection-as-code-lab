@@ -1,0 +1,5 @@
+# Rule: Suspicious PowerShell Encoded Command
+index=* sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+(Image="*\\powershell.exe" OR Image="*\\pwsh.exe")
+(CommandLine="* -enc *" OR CommandLine="* -encodedcommand *" OR CommandLine="* -e *" OR CommandLine="*/enc *" OR CommandLine="*/encodedcommand *")
+| table _time host User Image ParentImage CommandLine
