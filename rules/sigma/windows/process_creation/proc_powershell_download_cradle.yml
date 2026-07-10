@@ -1,0 +1,46 @@
+title: Suspicious PowerShell Download Cradle
+id: 9ab8e1b7-f418-49a8-9edb-3942a5a1fd37
+status: experimental
+description: Detects PowerShell command lines that attempt to download or execute remote content using common web client patterns.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+  - https://attack.mitre.org/techniques/T1105/
+author: Matt Caballero
+date: 2026-07-09
+modified: 2026-07-09
+tags:
+  - attack.execution
+  - attack.command_and_control
+  - attack.t1059.001
+  - attack.t1105
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_image:
+    Image|endswith:
+      - '\\powershell.exe'
+      - '\\pwsh.exe'
+  selection_download:
+    CommandLine|contains:
+      - 'DownloadString'
+      - 'DownloadFile'
+      - 'Invoke-WebRequest'
+      - 'iwr '
+      - 'curl '
+      - 'wget '
+      - 'Net.WebClient'
+  selection_url:
+    CommandLine|contains:
+      - 'http://'
+      - 'https://'
+  condition: selection_image and selection_download and selection_url
+fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+falsepositives:
+  - Legitimate administrative scripts downloading trusted internal resources.
+  - Software deployment tools retrieving packages over HTTP/S.
+level: high

@@ -1,0 +1,39 @@
+title: Suspicious Scheduled Task Creation
+id: 73e44506-90a9-4d7d-9052-947a5df9d3df
+status: experimental
+description: Detects scheduled task creation using schtasks.exe, especially when launched from suspicious parent processes or with immediate execution settings.
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+author: Matt Caballero
+date: 2026-07-09
+modified: 2026-07-09
+tags:
+  - attack.execution
+  - attack.persistence
+  - attack.privilege_escalation
+  - attack.t1053.005
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_image:
+    Image|endswith: '\\schtasks.exe'
+  selection_create:
+    CommandLine|contains:
+      - ' /create '
+      - ' /Create '
+  selection_suspicious:
+    CommandLine|contains:
+      - ' /sc minute '
+      - ' /sc once '
+      - ' /tn '
+      - ' /tr '
+  condition: selection_image and selection_create and selection_suspicious
+fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+falsepositives:
+  - Administrative task deployment and software update mechanisms.
+level: medium

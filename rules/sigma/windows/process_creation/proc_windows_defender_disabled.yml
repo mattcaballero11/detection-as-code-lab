@@ -1,0 +1,44 @@
+title: Windows Defender Disabled via Command Line
+id: 7836ea87-e33d-4965-b95d-d962e79b047b
+status: experimental
+description: Detects command-line attempts to disable Microsoft Defender protections using PowerShell or built-in Windows utilities.
+references:
+  - https://attack.mitre.org/techniques/T1562/001/
+author: Matt Caballero
+date: 2026-07-09
+modified: 2026-07-09
+tags:
+  - attack.defense_evasion
+  - attack.t1562.001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_powershell:
+    Image|endswith:
+      - '\\powershell.exe'
+      - '\\pwsh.exe'
+    CommandLine|contains:
+      - 'Set-MpPreference'
+  selection_disable_flags:
+    CommandLine|contains:
+      - 'DisableRealtimeMonitoring $true'
+      - 'DisableBehaviorMonitoring $true'
+      - 'DisableBlockAtFirstSeen $true'
+      - 'DisableIOAVProtection $true'
+      - 'DisableScriptScanning $true'
+  selection_sc:
+    Image|endswith: '\\sc.exe'
+    CommandLine|contains|all:
+      - 'WinDefend'
+      - 'stop'
+  condition: (selection_powershell and selection_disable_flags) or selection_sc
+fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+falsepositives:
+  - Endpoint troubleshooting by authorized administrators.
+  - Security tooling maintenance windows.
+level: high

@@ -1,0 +1,39 @@
+title: Azure AD Risky Sign-In Due to Unlikely Travel
+id: 55e31c51-f74d-48bc-8cab-65fbc7b6b728
+status: experimental
+description: Detects Microsoft Entra ID sign-in events containing unlikely travel or anonymous IP risk signals.
+references:
+  - https://attack.mitre.org/techniques/T1078/
+author: Matt Caballero
+date: 2026-07-09
+modified: 2026-07-09
+tags:
+  - attack.initial_access
+  - attack.persistence
+  - attack.defense_evasion
+  - attack.t1078
+logsource:
+  product: azure
+  service: signinlogs
+detection:
+  selection_risk:
+    RiskEventTypes|contains:
+      - 'unlikelyTravel'
+      - 'anonymizedIPAddress'
+      - 'maliciousIPAddress'
+  filter_benign_result:
+    ResultType: 0
+    ConditionalAccessStatus: success
+    RiskState: dismissed
+  condition: selection_risk and not filter_benign_result
+fields:
+  - UserPrincipalName
+  - IPAddress
+  - AppDisplayName
+  - Location
+  - RiskEventTypes
+  - RiskState
+falsepositives:
+  - Users traveling without updating location context.
+  - VPN, proxy, or corporate egress changes.
+level: medium

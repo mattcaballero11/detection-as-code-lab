@@ -1,0 +1,32 @@
+title: WMI Process Execution via WMIC
+id: f1e56f84-8f39-4f6f-8d56-8b1329086700
+status: experimental
+description: Detects process execution using wmic.exe process call create, which may indicate remote or local WMI-based execution.
+references:
+  - https://attack.mitre.org/techniques/T1047/
+author: Matt Caballero
+date: 2026-07-09
+modified: 2026-07-09
+tags:
+  - attack.execution
+  - attack.t1047
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_image:
+    Image|endswith: '\\wmic.exe'
+  selection_process_create:
+    CommandLine|contains|all:
+      - 'process'
+      - 'call'
+      - 'create'
+  condition: selection_image and selection_process_create
+fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+falsepositives:
+  - Legacy administrative scripts using WMIC for endpoint management.
+level: medium

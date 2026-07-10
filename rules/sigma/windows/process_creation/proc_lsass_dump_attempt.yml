@@ -1,0 +1,39 @@
+title: LSASS Memory Dump Attempt
+id: ed3b8d10-58c5-4a8e-83de-8acb408a8a11
+status: experimental
+description: Detects command-line patterns that may indicate attempts to dump LSASS memory for credential theft.
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+author: Matt Caballero
+date: 2026-07-09
+modified: 2026-07-09
+tags:
+  - attack.credential_access
+  - attack.t1003.001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_lsass:
+    CommandLine|contains|all:
+      - 'lsass'
+      - '.dmp'
+  selection_tools:
+    Image|endswith:
+      - '\\procdump.exe'
+      - '\\procdump64.exe'
+      - '\\rundll32.exe'
+      - '\\comsvcs.dll'
+  selection_comsvcs:
+    CommandLine|contains|all:
+      - 'comsvcs.dll'
+      - 'MiniDump'
+  condition: selection_lsass or selection_tools or selection_comsvcs
+fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+falsepositives:
+  - Approved memory dump collection by endpoint engineering or incident response teams.
+level: high
