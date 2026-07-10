@@ -18,4 +18,3 @@ Recommended evidence levels:
 - Run the SPL or KQL queries against lab-only data.
 - Screenshot query hits and field output.
 
-Do not upload or sanitize client telemetry for this portfolio.
