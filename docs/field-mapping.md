@@ -1,17 +1,32 @@
-# Field Mapping Notes
+# Field Mapping & Schema Normalization
 
-This project uses Sigma fields as the canonical detection format, then maps selected rules to Microsoft Sentinel-style KQL and Splunk SPL.
+The same logical field has different names in every SIEM. A detection that works across platforms depends on mapping each concept correctly to each data model — getting this wrong is the most common reason a "translated" rule silently stops matching.
 
-| Detection concept | Sigma field | Microsoft XDR / Sentinel-style KQL field | Splunk Sysmon/Security field | Notes |
-|---|---|---|---|---|
-| Process image | `Image` | `FolderPath` / `FileName` | `Image` | KQL often separates file name and full path. |
-| Command line | `CommandLine` | `ProcessCommandLine` | `CommandLine` | Primary process behavior field. |
-| Parent process image | `ParentImage` | `InitiatingProcessFileName` / `InitiatingProcessFolderPath` | `ParentImage` | Used for suspicious parent-child relationships. |
-| Parent command line | `ParentCommandLine` | `InitiatingProcessCommandLine` | `ParentCommandLine` | Not always present in all telemetry sources. |
-| User | `User` | `AccountName` | `User` / `user` | Normalize field casing per platform. |
-| Host | `Computer` / `Hostname` | `DeviceName` | `host` / `ComputerName` | Depends on source and collector. |
-| Registry key | `TargetObject` | `RegistryKey` | `TargetObject` | Sysmon Event ID 13 maps cleanly here. |
-| Registry data | `Details` | `RegistryValueData` | `Details` | Useful for persistence detection. |
-| SMB share | `ShareName` | `ShareName` | `ShareName` | Windows Security Event ID 5140. |
-| Azure AD user | `UserPrincipalName` | `UserPrincipalName` | `UserPrincipalName` | Cloud identity sign-in logs. |
-| Risk events | `RiskEventTypes` | `RiskEventTypes` | `RiskEventTypes` | Entra ID risky sign-in context. |
+This reference maps the fields used across the detection library.
+
+## Process-creation fields
+
+| Detection concept | Sigma | Microsoft Sentinel (KQL) | Splunk |
+| :--- | :--- | :--- | :--- |
+| Process image | `Image` | `FileName` / `FolderPath` | `Image` |
+| Command line | `CommandLine` | `ProcessCommandLine` | `CommandLine` |
+| Parent process | `ParentImage` | `InitiatingProcessFileName` | `ParentImage` |
+| User | `User` | `AccountName` | `User` / `user` |
+| Host | `Computer` | `DeviceName` | `host` |
+| Registry key | `TargetObject` / `RegistryKey` | `RegistryKey` | `TargetObject` |
+
+## Notes on the Microsoft data model
+
+The hand-reviewed KQL targets the **Microsoft Defender / XDR** schema (e.g. `DeviceProcessEvents`), where:
+
+- the acting process is split across `FileName` and `FolderPath` rather than a single `Image` path,
+- the initiating (parent) process is prefixed `InitiatingProcess*`,
+- identity and device use `AccountName` and `DeviceName`.
+
+When converting with `sigma-cli`, the `microsoft_xdr` pipeline handles most of this automatically; hand-review then confirms the mapping and adds triage fields.
+
+## Why normalization matters
+
+- **Correctness** — an unmapped or mis-mapped field produces a rule that parses cleanly but never fires.
+- **Portability** — explicit mappings are what let a single Sigma rule target multiple SIEMs reliably.
+- **Onboarding** — when a new log source arrives, a documented mapping table is the difference between a same-day rollout and a week of guesswork.
