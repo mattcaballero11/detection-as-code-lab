@@ -1,0 +1,38 @@
+{
+  "name": "Detection-as-Code Lab Coverage",
+  "versions": {
+    "attack": "19",
+    "navigator": "5.3.2",
+    "layer": "4.5"
+  },
+  "domain": "enterprise-attack",
+  "description": "ATT&CK coverage for a lab-built multi-SIEM detection engineering portfolio using Sigma, KQL, and SPL.",
+  "filters": {
+    "platforms": ["Windows", "Azure AD"]
+  },
+  "layout": {
+    "layout": "side",
+    "showID": true,
+    "showName": true
+  },
+  "techniques": [
+    {"techniqueID": "T1059.001", "tactic": "execution", "score": 80, "comment": "PowerShell encoded command and download cradle detections"},
+    {"techniqueID": "T1105", "tactic": "command-and-control", "score": 60, "comment": "PowerShell download cradle detection"},
+    {"techniqueID": "T1003.001", "tactic": "credential-access", "score": 80, "comment": "LSASS memory dump detection"},
+    {"techniqueID": "T1547.001", "tactic": "persistence", "score": 80, "comment": "Registry Run/RunOnce key persistence detection"},
+    {"techniqueID": "T1053.005", "tactic": "persistence", "score": 80, "comment": "Scheduled task creation detection"},
+    {"techniqueID": "T1562.001", "tactic": "defense-evasion", "score": 80, "comment": "Microsoft Defender tampering detection"},
+    {"techniqueID": "T1218.011", "tactic": "defense-evasion", "score": 80, "comment": "Suspicious rundll32 proxy execution detection"},
+    {"techniqueID": "T1047", "tactic": "execution", "score": 80, "comment": "WMI process execution detection"},
+    {"techniqueID": "T1021.002", "tactic": "lateral-movement", "score": 70, "comment": "SMB admin share access detection"},
+    {"techniqueID": "T1078", "tactic": "initial-access", "score": 60, "comment": "Azure AD risky sign-in detection"}
+  ],
+  "gradient": {
+    "colors": ["#FFE766", "#FF5C1A"],
+    "minValue": 0,
+    "maxValue": 100
+  },
+  "legendItems": [
+    {"label": "Covered by lab detection", "color": "#FF5C1A"}
+  ]
+}
