@@ -34,7 +34,7 @@ A test passes when the malicious row(s) are returned and the benign row(s) are e
 
 ## Screenshot index
 
-Validation screenshots are stored in `../screenshots/` using the scheme `05_kql_test_*` through `14_kql_test_*`. Each shows the query, the synthetic data, the detection logic, and the returned result — with the benign control row correctly excluded.
+Validation screenshots are stored in `../screenshots/` using the scheme `05_kql_test_<detection>.png` through `14_kql_test_<detection>.png`, one per rule in the table above, plus a side-by-side comparison of a rule's Sigma, KQL, and SPL forms (`sigma_kql_spl_side_by_side.png`). Each test screenshot shows the query, the synthetic data, the detection logic, and the returned result — with the benign control row correctly excluded.
 
 ## Splunk validation
 

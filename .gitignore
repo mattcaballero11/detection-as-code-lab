@@ -1,0 +1,14 @@
+# --- Private interview preparation (never publish) ---
+interview/
+
+# --- Python / Sigma toolchain ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# --- Editor / OS noise ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

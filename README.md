@@ -113,9 +113,9 @@ Four detections shown validating across four different tactics:
 
 | PowerShell Encoded Command (Execution) | LSASS Dump Attempt (Credential Access) |
 | :---: | :---: |
-| ![PowerShell KQL test](screenshots/05_test1.png) | ![LSASS KQL test](screenshots/06_kql_lsass_hit.png) |
+| ![PowerShell KQL test](screenshots/05_kql_test_powershell_encoded_command.png) | ![LSASS KQL test](screenshots/06_kql_test_lsass_memory_dump.png) |
 | **Registry Run Key (Persistence)** | **Azure AD Risky Sign-In (Initial Access)** |
-| ![Registry KQL test](screenshots/07_kql_registry_hit.png) | ![Azure AD KQL test](screenshots/08_kql_azuread_hit.png) |
+| ![Registry KQL test](screenshots/07_kql_test_registry_run_key.png) | ![Azure AD KQL test](screenshots/08_kql_test_azuread_risky_signin.png) |
 
 Expected result counts for all ten tests are documented in [`docs/testing-notes.md`](docs/testing-notes.md).
 
@@ -123,8 +123,7 @@ Expected result counts for all ten tests are documented in [`docs/testing-notes.
 
 Every rule is tagged with its ATT&CK technique, and [`navigator/detection_coverage_layer.json`](navigator/detection_coverage_layer.json) renders those techniques as a coverage layer in the [ATT&CK Navigator](https://mitre-attack.github.io/attack-navigator/). Scores and comments tie the coloring to specific detections, so the map reflects real coverage rather than decoration.
 
-<!-- VERIFY these two filenames against `ls screenshots/` and fix if needed. -->
-![ATT&CK Navigator coverage](screenshots/10_attack_navigator_coverage_full_matrix.png)
+![ATT&CK Navigator coverage](screenshots/attack_navigator_coverage_full_matrix.png)
 
 The library covers **10 techniques across 6 tactics** — Execution, Credential Access, Persistence, Defense Evasion, Lateral Movement, and Initial Access:
 
@@ -132,7 +131,7 @@ The library covers **10 techniques across 6 tactics** — Execution, Credential 
 
 Drilling into a technique shows the coverage is detection-backed, not just colored in:
 
-![PowerShell technique detail](screenshots/11_attack_navigator_powershell_detail.png)
+![Scheduled Task technique detail](screenshots/attack_navigator_scheduled_task_detail.png)
 
 ### Step 6 — Document the analyst response
 
